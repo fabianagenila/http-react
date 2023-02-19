@@ -31,6 +31,12 @@ function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(product),
     });
+
+    const addedProduct = await res.json();
+    setProducts((prevProducts) => [...prevProducts, addedProduct]);
+
+    setName("");
+    setPrice("");
   };
 
   return (
