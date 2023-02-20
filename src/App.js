@@ -1,26 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { useFetch } from "./hook/useFetch";
 
 const url = "http://localhost:3000/products";
 
 function App() {
-  const [products, setProducts] = useState([]);
-
-  const { data: items, httpConfig, loading } = useFetch(url);
+  const { data: items, httpConfig, loading, error } = useFetch(url);
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const res = await fetch(url);
-  //     const data = await res.json();
-
-  //     setProducts(data);
-  //   }
-  //   fetchData();
-  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,15 +16,6 @@ function App() {
       name,
       price,
     };
-
-    // const res = await fetch(url, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(product),
-    // });
-
-    // const addedProduct = await res.json();
-    // setProducts((prevProducts) => [...prevProducts, addedProduct]);
 
     httpConfig(product, "POST");
 
@@ -48,6 +27,7 @@ function App() {
     <div className="App">
       <h1>Lista de Produtos</h1>
       {loading && <p>Carregando dados...</p>}
+      {error && <p>{error}</p>}
       {!loading && (
         <ul>
           {items &&
