@@ -7,6 +7,7 @@ export const useFetch = (url) => {
   const [callFetch, setCallFetch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [itemId, setItemId] = useState(null);
 
   const httpConfig = (data, method) => {
     if (method === "POST") {
@@ -19,6 +20,16 @@ export const useFetch = (url) => {
       });
 
       setMethod(method);
+    } else if (method === "DELETE") {
+      setConfig({
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setMethod(method);
+      setItemId(data);
     }
   };
 
@@ -31,8 +42,6 @@ export const useFetch = (url) => {
         const json = await res.json();
         setData(json);
       } catch (error) {
-        console.log(error.message);
-
         setError("Houve algum erro ao carregar os dados");
       }
 
@@ -44,16 +53,23 @@ export const useFetch = (url) => {
 
   useEffect(() => {
     const httpRequest = async () => {
+      let json;
+
       if (method === "POST") {
         let fetchOptions = [url, config];
         const res = await fetch(...fetchOptions);
-        const json = await res.json();
-        setCallFetch(json);
+        json = await res.json();
+      } else if (method === "DELETE") {
+        const deleteUrl = `${url}/${itemId}`;
+        const res = await fetch(deleteUrl, config);
+        json = await res.json();
       }
+
+      setCallFetch(json);
     };
 
     httpRequest();
-  }, [config, method, url]);
+  }, [config, method, url, itemId]);
 
   return { data, httpConfig, loading, error };
 };
